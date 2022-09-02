@@ -1,0 +1,38 @@
+{
+  "name": "tailwindcss-layered-box-shadow",
+  "version": "0.0.0",
+  "description": "A plugin that provides advanced and more realistic layered box shadows for tailwindcss.",
+  "main": "src/index.js",
+  "author": "Fabian Bentz Webentwicklung <info@fabianbentz.de>",
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "tailwindcss-plugin",
+    "tailwind-utility",
+    "tailwind-variants",
+    "container-query",
+    "tailwidncss-box-shadow",
+    "box-shadow",
+    "layered-box-shadow"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "demo:dev": "npx tailwindcss -i ./demo/style.css -o ./demo/output.css --watch",
+    "demo:build": "npx tailwindcss -i ./demo/style.css -o ./demo/output.css",
+    "demo:deploy": "rm -rf demo/output.css && yarn run demo:build && gh-pages -d demo",
+    "prepublishOnly": "node scripts/build.js"
+  },
+  "peerDependencies": {
+    "tailwindcss": ">=3.1.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.8",
+    "clean-css": "^5.3.1",
+    "gh-pages": "^4.0.0",
+    "jest": "^29.0.1",
+    "jest-matcher-css": "^1.1.0",
+    "postcss": "^8.4.16",
+    "tailwindcss": "^3.1.8"
+  }
+}

@@ -3,105 +3,85 @@ const plugin = require('tailwindcss/plugin')
 /*
 * Convert hex to hsl
  */
-const hexToHSL = (H) => {
-    // Convert hex to RGB first
-    let r = 0, g = 0, b = 0;
-    if (H.length === 4) {
-        r = "0x" + H[1] + H[1];
-        g = "0x" + H[2] + H[2];
-        b = "0x" + H[3] + H[3];
-    } else if (H.length === 7) {
-        r = "0x" + H[1] + H[2];
-        g = "0x" + H[3] + H[4];
-        b = "0x" + H[5] + H[6];
+/**
+ * ECMA2016 / ES6
+ */
+const convertHexToRGBA = (hexCode, opacity) => {
+    let hex = hexCode.replace('#', '');
+
+    if (hex.length === 3) {
+        hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
     }
-    // Then to HSL
-    r /= 255;
-    g /= 255;
-    b /= 255;
-    let cmin = Math.min(r,g,b),
-        cmax = Math.max(r,g,b),
-        delta = cmax - cmin,
-        h = 0,
-        s = 0,
-        l = 0;
 
-    if (delta === 0)
-        h = 0;
-    else if (cmax === r)
-        h = ((g - b) / delta) % 6;
-    else if (cmax === g)
-        h = (b - r) / delta + 2;
-    else
-        h = (r - g) / delta + 4;
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
 
-    h = Math.round(h * 60);
+    /* Backward compatibility for whole number based opacity values. */
+    if (opacity > 1 && opacity <= 100) {
+        opacity = opacity / 100;
+    }
 
-    if (h < 0)
-        h += 360;
-
-    l = (cmax + cmin) / 2;
-    s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
-    s = +(s * 100).toFixed(1);
-    l = +(l * 100).toFixed(1);
-
-    return  h + "deg," + s + "%," + l + "%";
-}
+    return `${r},${g},${b},${opacity}`;
+};
 
 const layeredBoxShadow = plugin(
   function ({ matchUtilities, addUtilities, theme, e }) {
     const shadowColor = theme('shadowColor');
     const shadowTint = theme('shadowTint');
     const shadowSize = theme('shadowSize');
+    const shadowPositionX = theme('shadowPositionX');
+    const shadowPositionY = theme('shadowPositionY');
+    const shadowBlur = theme('shadowBlur');
+    const shadowSpread = theme('shadowSpread');
 
-    const color = hexToHSL(shadowColor);
+      const color = convertHexToRGBA(shadowColor, shadowTint ? shadowTint : 1);
 
-    let shadowSizeDefaults = {
-        'low-r': `
-            0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            1.4px 1.4px 2.2px -1.2px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            3.3px 3.3px 5.3px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-        `,
-        'medium-r': `0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            2.7px 2.7px 4.3px -0.8px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            6.7px 6.8px 10.7px -1.7px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            16.3px 16.5px 26.1px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.36'});
-        `,
-        'high-r': `0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            4.8px 4.8px 7.6px -0.4px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            8.9px 9px 14.2px -0.7px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            14.6px 14.7px 23.3px -1.1px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            23.3px 23.5px 37.2px -1.4px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            36.4px 36.7px 58.2px -1.8px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            55.4px 55.9px 88.5px -2.1px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-            81.5px 82.3px 130.3px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-        `,
-        'low-l': `-0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -1.3px 1.4px 2.1px -1.2px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -3.3px 3.3px 5.3px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-        `,
-        'medium-l': `-0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            -2.7px 2.7px 4.3px -0.8px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            -6.7px 6.8px 10.7px -1.7px hsl(${color} / ${shadowTint ? shadowTint : '0.36'}),
-            -16.3px 16.5px 26.1px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.36'});
-        `,
-        'high-l': `-0.8px 0.8px 1.3px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -4.7px 4.8px 7.6px -0.4px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -8.9px 9px 14.2px -0.7px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -14.6px 14.7px 23.3px -1.1px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -23.2px 23.5px 37.2px -1.4px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -36.3px 36.7px 58.1px -1.8px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -55.2px 55.9px 88.4px -2.1px hsl(${color} / ${shadowTint ? shadowTint : '0.34'}),
-            -81.4px 82.3px 130.2px -2.5px hsl(${color} / ${shadowTint ? shadowTint : '0.34'});
-        `,
+    const layers = [
+        { size: 'xs', layers: 3},
+        { size: 'sm', layers: 4},
+        { size: 'md', layers: 5},
+        { size: 'lg', layers: 6},
+        { size: 'xl', layers: 7},
+        { size: '2xl', layers: 8}
+    ];
+
+    const generateShadows = () => {
+        let shadows = [];
+        layers.forEach((el) => {
+            console.log(el);
+            const layers = Array(el.layers).fill(0);
+            console.log(layers);
+            let shadowValueStr = '';
+            let blur = 0;
+            let spread = shadowSpread;
+            layers.forEach((el, idx) => {
+                if (blur === 0) {
+                    blur = shadowBlur;
+                }
+                shadowValueStr = shadowValueStr + ' ' + `${shadowPositionX * (idx + 2)}px ${shadowPositionY * (idx + 2)}px ${blur}px  ${spread}px rgba(${color}),`;
+                spread = spread - 0.375;
+            })
+
+            shadowValueStr = shadowValueStr.slice(0, -1);
+
+            const shadow = { [el.size]: shadowValueStr };
+
+            console.log(shadow);
+
+            shadows.push(shadow);
+        });
+
+        return shadows;
     }
 
-    let shadows;
-    if (shadowSize) {
-        shadows = Object.assign({}, shadowSize, shadowSizeDefaults);
-    } else {
-        shadows = shadowSizeDefaults;
-    }
+    const shadowArrs = generateShadows();
+    console.log(shadowArrs);
+    let shadowSizeDefaults = Object.assign({}, ...shadowArrs);
+
+    console.log(shadowSizeDefaults);
+
+    const shadows = shadowSizeDefaults;
 
     console.log(shadows);
 
@@ -109,7 +89,7 @@ const layeredBoxShadow = plugin(
       [
         Object.entries(shadows).map(([key, value]) => {
           return {
-            [`.${e(`layered-boxShadow-${key}`)}`]: {
+            [`.${e(`shadow-layered-${key}`)}`]: {
               'boxShadow': `${value}`,
             },
           }
@@ -121,8 +101,12 @@ const layeredBoxShadow = plugin(
     experimental: { matchVariant: true },
     theme: {
         shadowSize: {},
-        shadowTint: false,
-        shadowColor: '#6267ad'
+        shadowTint: 0.34,
+        shadowColor: '#6267ad',
+        shadowPositionX: 1,
+        shadowPositionY: 1,
+        shadowBlur: 10,
+        shadowSpread: -0.2
     },
   }
 )

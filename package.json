@@ -1,6 +1,6 @@
 {
   "name": "tailwindcss-layered-box-shadow",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A plugin that provides advanced and more realistic layered box shadows for tailwindcss.",
   "main": "src/index.js",
   "author": "Fabian Bentz Webentwicklung <info@fabianbentz.de>",

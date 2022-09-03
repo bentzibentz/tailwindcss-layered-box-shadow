@@ -1,3 +1,5 @@
+# Advanced configurable layered Box Shadow classes for tailwindcss
+
 # tailwindcss-layered-box-shadow
 
 A plugin that provides advanced, more realistic and fully configurable layered box shadow classes for tailwindcss. 
@@ -86,3 +88,7 @@ module.exports = {
     }
 }
 ```
+
+## Demo
+
+[https://bentzibentz.github.io/tailwindcss-layered-box-shadow/](https://bentzibentz.github.io/tailwindcss-layered-box-shadow/)

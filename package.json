@@ -20,8 +20,9 @@
     "test": "jest",
     "demo:dev": "npx tailwindcss -i ./demo/style.css -o ./demo/output.css --watch",
     "demo:build": "npx tailwindcss -i ./demo/style.css -o ./demo/output.css",
-    "demo:deploy": "rm -rf demo/output.css && yarn run demo:build && gh-pages -d demo",
-    "prepublishOnly": "node scripts/build.js"
+    "demo:deploy": "rm -rf demo/output.css && npm run demo:build && gh-pages -d demo",
+    "prepublishOnly": "node scripts/build.js",
+    "release": "release-it --no-git.requireUpstream"
   },
   "peerDependencies": {
     "tailwindcss": ">=3.1.0"
@@ -36,6 +37,14 @@
     "tailwindcss": "^3.1.8"
   },
   "dependencies": {
-    "tailwindcss-container-query": "^1.1.0"
+    "release-it": "^15.4.1"
+  },
+  "release-it": {
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "conventionalcommits",
+        "infile": "CHANGELOG.md"
+      }
+    }
   }
 }

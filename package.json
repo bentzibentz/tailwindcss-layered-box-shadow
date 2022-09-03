@@ -10,7 +10,6 @@
     "tailwindcss-plugin",
     "tailwind-utility",
     "tailwind-variants",
-    "container-query",
     "tailwidncss-box-shadow",
     "box-shadow",
     "layered-box-shadow"

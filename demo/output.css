@@ -568,8 +568,8 @@ video {
   width: 100%;
 }
 
-.max-w-lg {
-  max-width: 32rem;
+.max-w-2xl {
+  max-width: 42rem;
 }
 
 .grid-cols-1 {
@@ -582,6 +582,10 @@ video {
 
 .gap-16 {
   gap: 4rem;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
 }
 
 .bg-green-400 {
